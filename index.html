@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera App</title>
+</head>
+<body>
+  <main id="camera">
+    <canvas id="camera--sensor"></canvas>
+    <video id="camera--view" autoplay playsinline></video>
+    <img src="//:0" alt="" id="camera--output">
+    <button id="camera--trigger">Take a picture</button>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/getUserMedia/1.0.1/getUserMedia.min.js"></script>
+
+  <script>
+    var camera = document.getElementById("camera--sensor");
+    var video = document.getElementById("camera--view");
+    var output = document.getElementById("camera--output");
+    var trigger = document.getElementById("camera--trigger");
+
+    // Initialize the camera
+    function init() {
+      if (navigator.getUserMedia) {
+        var constraints = {
+          video: {
+            facingMode: "user"
+          }
+        };
+
+        navigator.getUserMedia(constraints, function(stream) {
+          video.srcObject = stream;
+          video.play();
+        }, function(error) {
+          console.log(error);
+        });
+      } else {
+        console.log("getUserMedia not supported");
+      }
+    }
+
+    // Take a picture
+    function takePicture() {
+      var ctx = camera.getContext("2d");
+      var width = camera.width;
+      var height = camera.height;
+
+      // Draw the current frame to the canvas
+      ctx.drawImage(video, 0, 0, width, height);
+
+      // Create a new image from the canvas
+      var image = new Image();
+      image.src = canvas.toDataURL("image/jpeg");
+
+      // Display the image
+      output.src = image.src;
+    }
+
+    // Bind the click event to the trigger button
+    trigger.addEventListener("click", takePicture);
+
+    // Initialize the camera when the page loads
+    window.addEventListener("load", init);
+  </script>
+</body>
+</html>
